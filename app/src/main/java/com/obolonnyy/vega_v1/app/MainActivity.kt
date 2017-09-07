@@ -2,6 +2,8 @@ package com.obolonnyy.vega_v1.app
 
 import android.Manifest
 import android.accounts.AccountManager
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
@@ -18,10 +20,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -41,7 +40,6 @@ import com.obolonnyy.vega_v1.util.database.MyDatabaseOpenHelper
 import com.obolonnyy.vega_v1.util.database.database
 import com.obolonnyy.vega_v1.util.dataobjects.CustomSubjectsWithDate
 import com.obolonnyy.vega_v1.util.dataobjects.Professors
-import com.obolonnyy.vega_v1.util.dataobjects.Screens
 import com.obolonnyy.vega_v1.util.dataobjects.Subjects
 import com.obolonnyy.vega_v1.util.viewspages.ProfessorsPage
 import com.obolonnyy.vega_v1.util.viewspages.SubjectsPage
@@ -90,8 +88,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         loadAllFromDatabase()
         loadMainPage()
 
-        val screen = sPref.getInt(Screens.SCREENS.screen, R.id.Main_Acti)
-        onNavigationItemSelected(screen)
+//        val screen = sPref.getInt(Screens.SCREENS.screen, R.id.Main_Acti)
+//        onNavigationItemSelected(screen)
+
+//        val fab = findViewById(R.id.floatingActionButton) as FloatingActionButton
+//        fab.setOnClickListener(View.OnClickListener { startCircularRevealAnimation() })
     }
 
     override fun onBackPressed() {
@@ -135,15 +136,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (id == R.id.Main_Acti) {
             initializeContentFor(R.layout.content_main)
             loadMainPage()
+            startCircularRevealAnimation(findViewById(R.id.content_main))
         } else if (id == R.id.Subjects_Acti) {
             initializeContentFor(R.layout.content_subjects)
             loadSubjects()
         } else if (id == R.id.Professors_Acti) {
             initializeContentFor(R.layout.content_professors)
             loadProfessors()
+            startCircularRevealAnimation(findViewById(R.id.content_professors))
+
         } else if (id == R.id.Exams_Acti) {
             initializeContentFor(R.layout.content_exams)
             loadExamsPage()
+            startCircularRevealAnimation(findViewById(R.id.content_exams))
+
         } else if (id == R.id.Settings_Acti) {
             initializeContentFor(R.layout.content_settings)
             loadSettingsPage()
@@ -164,6 +170,58 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewGroup.removeAllViews()
         viewGroup.addView(View.inflate(this, to, null))
     }
+
+
+
+
+
+
+
+
+
+
+    /*##########################*/
+    /*##########  Other  ########*/
+    /*##########################*/
+
+
+    // Custom method to create a circular reveal animation for specified view
+    private fun startCircularRevealAnimation(v: View) {
+        // Get the specified view center x
+        val x = 0
+        val y = 0
+
+        val startRadius = 0
+        val endRadius = Math.hypot(2000.0,2000.0).toInt()
+//        val v = findViewById(R.id.content_main)
+
+        val anim = ViewAnimationUtils.createCircularReveal(v, x, y, startRadius.toFloat(), endRadius.toFloat())
+        anim.setDuration(3000)
+        anim.setStartDelay(80)
+        anim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator) {
+//                findViewById(R.id.floatingActionButton).setBackgroundColor(0)
+//                findViewById(R.id.content_main).visibility(View.INVISIBLE)
+//                findViewById(R.id.content_main).setBackgroundColor(R.color.myOrange)
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                v.setVisibility(View.VISIBLE)
+
+            }
+        })
+        anim.start()
+    }
+
+
+
+
+
+
+
+
+
+
 
     /*##########################*/
     /*##########  Main  ########*/

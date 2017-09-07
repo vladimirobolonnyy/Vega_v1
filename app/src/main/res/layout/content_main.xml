@@ -17,4 +17,18 @@
         android:layout_alignParentTop="true"
         android:text="Main"
         />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:onClick="startCircularRevealAnimation"
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="41dp"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+
 </RelativeLayout>
