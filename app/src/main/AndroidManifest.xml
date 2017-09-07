@@ -22,15 +22,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".app.SettingsActivity"
-            android:label="@string/title_activity_settings_activity"
-            android:parentActivityName=".app.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.obolonnyy.vega_v1.app.MainActivity" />
-        </activity>
     </application>
-
 </manifest>
