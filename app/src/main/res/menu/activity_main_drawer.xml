@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Main_Acti"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Главная" />
+        <item
+            android:id="@+id/Subjects_Acti"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Расписание" />
+        <item
+            android:id="@+id/Professors_Acti"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Преподаватели" />
+        <item
+            android:id="@+id/Exams_Acti"
+            android:icon="@drawable/ic_menu_send"
+            android:title="(в разработке)Сессия" />
+        <item
+            android:id="@+id/Settings_Acti"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Настройки" />
+        <item
+            android:id="@+id/About_Acti"
+            android:icon="@drawable/ic_menu_send"
+            android:title="(в разработке)О приложении" />
+    </group>
+</menu>
