@@ -21,9 +21,7 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
 import android.view.*
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -47,6 +45,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
@@ -253,12 +252,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /*####### Professors #######*/
     /*##########################*/
     private fun loadProfessors(){
-        var message: String = ""
-        for (each in professors){
-            message += each.toString() + "\n"+ "\n"
-        }
-        val textViewProfessors: TextView = findViewById(R.id.textViewProfessors) as TextView
-        textViewProfessors.setText(message)
+//        var message: String = ""
+//        for (each in professors){
+//            message += each.toString() + "\n"+ "\n"
+//        }
+//        val textViewProfessors: TextView = findViewById(R.id.textViewProfessors) as TextView
+//        textViewProfessors.setText(message)
+
+        val names = professors.map{it.FIO}
+        val listtView = findViewById(R.id.professors_listView) as ListView
+        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
+        android.R.layout.simple_list_item_1, names);
+        listtView.setAdapter(adapter)
     }
 
     /*##########################*/

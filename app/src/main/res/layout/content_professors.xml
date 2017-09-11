@@ -8,16 +8,11 @@
     tools:context="com.obolonnyy.vega_v1.app.MainActivity"
     android:id="@+id/content_professors">
 
-    <ScrollView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-        <TextView
-            android:id="@+id/textViewProfessors"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Professors" />
-    </ScrollView>
+        android:layout_alignParentTop="true"
+        android:id="@+id/professors_listView">
+    </ListView >
 </RelativeLayout>
