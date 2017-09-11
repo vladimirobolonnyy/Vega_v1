@@ -7,10 +7,7 @@ import com.obolonnyy.vega_v1.util.dataobjects.CustomSubjects
 import com.obolonnyy.vega_v1.util.dataobjects.CustomSubjectsWithDate
 import com.obolonnyy.vega_v1.util.dataobjects.Professors
 import com.obolonnyy.vega_v1.util.dataobjects.Subjects
-import org.jetbrains.anko.db.ManagedSQLiteOpenHelper
-import org.jetbrains.anko.db.SqlType
-import org.jetbrains.anko.db.TEXT
-import org.jetbrains.anko.db.createTable
+import org.jetbrains.anko.db.*
 
 /**
  * Created by Владимир on 20.08.2017.
@@ -29,7 +26,7 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
             return instance!!
         }
 
-        fun createPersonsTable(database: SQLiteDatabase){
+        fun createProfessorsTable(database: SQLiteDatabase){
             database.createTable(tableName = MyData.PROFESSORS_TABLE_NAME,
                     ifNotExists = true,
                     columns = *arrayOf(
@@ -71,9 +68,66 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
 
     override fun onCreate(database: SQLiteDatabase) {
         // Here you create tables
-        createPersonsTable(database)
+        createProfessorsTable(database)
         createSubjectsTable(database)
         createCustomSubjectsTable(database)
+
+        fullDefaultInfo(database)
+    }
+
+    private fun fullDefaultInfo(database: SQLiteDatabase) {
+        database.insert(
+                MyData.PROFESSORS_TABLE_NAME,
+                "id" to 1,
+                "FIO" to "Иван Иванович Иванов",
+                "scienceDegree" to "",
+                "email" to "",
+                "phone" to "",
+                "comment" to ""
+        )
+           database.insert(
+                MyData.PROFESSORS_TABLE_NAME,
+                "id" to 2,
+                "FIO" to "Петров Петр Петрович",
+                "scienceDegree" to "",
+                "email" to "",
+                "phone" to "",
+                "comment" to ""
+        )
+        database.insert(
+                MyData.PROFESSORS_TABLE_NAME,
+                "id" to 3,
+                "FIO" to "Сидоров Сидр Сидорович",
+                "scienceDegree" to "",
+                "email" to "",
+                "phone" to "",
+                "comment" to ""
+        )
+
+        database.insert(
+                MyData.SUBJECTS_TABLE_NAME,
+                "id" to 1,
+                "time" to "10:15 -11:50",
+                "dayOfWeek" to "Понедельник",
+                "chislOrZnamen" to "Числитель",
+                "description" to "Сидоров Сидр Сидорович преподает науку о сидрах"
+        )
+        database.insert(
+                MyData.SUBJECTS_TABLE_NAME,
+                "id" to 2,
+                "time" to "13:50-15:25",
+                "dayOfWeek" to "Среда",
+                "chislOrZnamen" to "Знаменатель",
+                "description" to "Иванов Иван Иванович рассказывает об ивах"
+        )
+        database.insert(
+                MyData.SUBJECTS_TABLE_NAME,
+                "id" to 3,
+                "time" to "10:15 -11:50",
+                "dayOfWeek" to "Птяница",
+                "chislOrZnamen" to "Числитель",
+                "description" to "Петров Петр Петрович рассказывает о Петре первом, сыне его славнов, богатстве нажитом и заслугах великих"
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

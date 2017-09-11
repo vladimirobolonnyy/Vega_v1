@@ -22,7 +22,7 @@ class DataBaseManager {
             database.transaction {
                 dropTable(MyData.PROFESSORS_TABLE_NAME, true)
             }
-            MyDatabaseOpenHelper.createPersonsTable(database)
+            MyDatabaseOpenHelper.createProfessorsTable(database)
 
             try {
                 for (each: Professors in professors) {
