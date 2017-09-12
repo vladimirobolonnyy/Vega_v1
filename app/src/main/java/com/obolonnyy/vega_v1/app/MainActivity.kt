@@ -46,7 +46,6 @@ import pub.devrel.easypermissions.EasyPermissions
 import java.io.IOException
 import java.util.*
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
     private lateinit var viewGroup: ViewGroup
