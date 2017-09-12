@@ -45,7 +45,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
@@ -139,6 +138,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else if (id == R.id.Subjects_Acti) {
             initializeContentFor(R.layout.content_subjects)
             loadSubjects()
+            startCircularRevealAnimation(findViewById(R.id.content_subjects))
         } else if (id == R.id.Professors_Acti) {
             initializeContentFor(R.layout.content_professors)
             loadProfessors()
@@ -187,15 +187,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     // Custom method to create a circular reveal animation for specified view
     private fun startCircularRevealAnimation(v: View) {
         // Get the specified view center x
-        val x = 0
-        val y = 0
+        val workingView = findViewById(R.id.content_main)
+        var x = 0
+        var y = 0
+        val maxX = workingView.width
+        val maxY = workingView.height
+
+        val rand = Random().nextInt(10)
+        when(rand) {
+            0,1 -> { x = 0; y = 0; }
+            2,3 -> { x = maxX; y = 0; }
+            4,5 -> { x = 0; y = maxY; }
+            6,7 -> { x = maxX; y = maxY; }
+            else -> { x = maxX/2; y = maxY/2; }
+        }
 
         val startRadius = 0
-        val endRadius = Math.hypot(2000.0,2000.0).toInt()
-//        val v = findViewById(R.id.content_main)
+        val endRadius = Math.hypot(workingView.width.toDouble(), workingView.height.toDouble()).toInt()
 
-        val anim = ViewAnimationUtils.createCircularReveal(v, x, y, startRadius.toFloat(), endRadius.toFloat())
-        anim.setDuration(3000)
+        val anim = ViewAnimationUtils.createCircularReveal(v, x, y, startRadius.toFloat(),
+                endRadius.toFloat())
+        anim.setDuration(800)
         anim.setStartDelay(80)
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
@@ -205,7 +217,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                v.setVisibility(View.VISIBLE)
+//                v.setVisibility(View.VISIBLE)
 
             }
         })
@@ -259,11 +271,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        val textViewProfessors: TextView = findViewById(R.id.textViewProfessors) as TextView
 //        textViewProfessors.setText(message)
 
-        val names = professors.map{it.FIO}
-        val listtView = findViewById(R.id.professors_listView) as ListView
+        val names = professors.map { it.FIO }
+        val listView = findViewById(R.id.professors_listView) as ListView
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
-        android.R.layout.simple_list_item_1, names);
-        listtView.setAdapter(adapter)
+                android.R.layout.simple_list_item_1, names);
+        listView.setOnItemClickListener(AdapterView.OnItemClickListener { _, _, pos, id ->
+            run {
+                val intent = Intent(this, EachProfessorActivity::class.java)
+                intent.putExtra("professorsPos", pos)
+                startActivity(intent)
+            }
+        })
+        listView.setAdapter(adapter)
     }
 
     /*##########################*/
@@ -566,12 +585,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             @Throws(IOException::class)
             get() {
                 val results = java.util.ArrayList<String>()
-                try {
                     getProfessorsFromGoogle()
                     results.add("Преподователи успешно загрузились.")
-                } catch (e: Exception) {
-                    results.add("Преподователи не загрузились =( \n Ошибка: $e")
-                }
 
                 try {
                     getSubjectsFromGoogle()

@@ -19,8 +19,19 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".app.EachProfessorActivity"
+            android:label="@string/title_activity_each_professor"
+            android:parentActivityName=".app.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obolonnyy.vega_v1.app.MainActivity" />
+        </activity>
     </application>
+
 </manifest>

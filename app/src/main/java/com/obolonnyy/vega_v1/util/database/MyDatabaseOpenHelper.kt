@@ -80,28 +80,28 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
                 MyData.PROFESSORS_TABLE_NAME,
                 "id" to 1,
                 "FIO" to "Иван Иванович Иванов",
-                "scienceDegree" to "",
-                "email" to "",
-                "phone" to "",
-                "comment" to ""
+                "scienceDegree" to "Старший преподаватель",
+                "email" to "ivan@gmail.com",
+                "phone" to "+7 909 999 9999",
+                "comment" to "Любит коньяк"
         )
            database.insert(
                 MyData.PROFESSORS_TABLE_NAME,
                 "id" to 2,
                 "FIO" to "Петров Петр Петрович",
-                "scienceDegree" to "",
-                "email" to "",
-                "phone" to "",
-                "comment" to ""
+                "scienceDegree" to "Доцент",
+                "email" to "petrov@yandex.ru",
+                "phone" to "+7 907 777 77 77",
+                "comment" to "Много говорит"
         )
         database.insert(
                 MyData.PROFESSORS_TABLE_NAME,
                 "id" to 3,
                 "FIO" to "Сидоров Сидр Сидорович",
-                "scienceDegree" to "",
-                "email" to "",
-                "phone" to "",
-                "comment" to ""
+                "scienceDegree" to "PHD",
+                "email" to "sidrsidorov@gmail.com",
+                "phone" to "+7 905 555 55 55",
+                "comment" to "Отмечает на лекциях"
         )
 
         database.insert(
