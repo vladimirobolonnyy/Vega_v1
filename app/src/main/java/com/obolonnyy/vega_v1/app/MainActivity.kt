@@ -553,7 +553,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val jsonFactory = JacksonFactory.getDefaultInstance()
             mService = com.google.api.services.sheets.v4.Sheets.Builder(
                     transport, jsonFactory, credential)
-                    .setApplicationName("MyTimeTable_v2")
+                    .setApplicationName("vega_v1")
                     .build()
         }
 
@@ -565,44 +565,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             try {
                 return dataFromApi
             } catch (e: Exception) {
-                println("Oshibka" + e)
-
                 mLastError = e
+                println("oshibka:= ${e}")
                 cancel(true)
                 return null
             }
 
         }
 
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-         * @return List of names and majors
-         * @throws IOException
-         */
         private val dataFromApi: List<String>
             @Throws(IOException::class)
             get() {
                 val results = java.util.ArrayList<String>()
-                    getProfessorsFromGoogle()
-                    results.add("Преподователи успешно загрузились.")
-
-                try {
-                    getSubjectsFromGoogle()
-                    results.add("Предметы успешно загрузились.")
-                } catch (e: Exception) {
-                    results.add("Предметы не загрузились =( \n Ошибка: $e")
-                }
-
-                try {
-                    getCustomSubjectsFromGoogle()
-                    results.add("доп. предметы успешно загрузились.")
-                } catch (e: Exception) {
-                    results.add("доп. предметы не загрузились =( \n Ошибка: $e")
-                }
-
+                testConnection()
+                results.add("Проверка соединения успешно завершена.")
+                getProfessorsFromGoogle()
+                results.add("Преподователи успешно загрузились.")
+                getSubjectsFromGoogle()
+                results.add("Предметы успешно загрузились.")
+                getCustomSubjectsFromGoogle()
+                results.add("Доп. предметы успешно загрузились.")
                 return results
             }
+
+        @Throws(IOException::class)
+        private fun testConnection(){
+            val testspreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+            val testrange = "Class Data!A2:E"
+            val testresponse = this.mService!!.spreadsheets().values()
+                    .get(testspreadsheetId, testrange)
+                    .execute()
+            val testvalues = testresponse.getValues()
+        }
 
         @Throws(IOException::class)
         private fun getProfessorsFromGoogle() {
