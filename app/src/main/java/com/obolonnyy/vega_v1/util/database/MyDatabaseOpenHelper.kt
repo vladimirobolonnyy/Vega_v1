@@ -107,7 +107,7 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
         database.insert(
                 MyData.SUBJECTS_TABLE_NAME,
                 "id" to 1,
-                "time" to "10:15 -11:50",
+                "time" to "10:15-11:50",
                 "dayOfWeek" to "Понедельник",
                 "chislOrZnamen" to "Числитель",
                 "description" to "Сидоров Сидр Сидорович преподает науку о сидрах"
@@ -123,10 +123,20 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
         database.insert(
                 MyData.SUBJECTS_TABLE_NAME,
                 "id" to 3,
-                "time" to "10:15 -11:50",
+                "time" to "10:15-11:50",
                 "dayOfWeek" to "Птяница",
                 "chislOrZnamen" to "Числитель",
                 "description" to "Петров Петр Петрович рассказывает о Петре первом, сыне его славнов, богатстве нажитом и заслугах великих"
+        )
+
+        //ToDo сделать так, чтобы работало
+        //ToDo вроде бы еще надо сделать обновление, чтобы подкачиваемые данные сразу обновлялись
+        database.insert(
+                MyData.CUSTOM_SUBJECTS_TABLE_NAME,
+                "id" to 1,
+                "time" to "10:15-11:50",
+                "description" to "Лабы какие-то",
+                "stringDate" to "26.09.2017"
         )
     }
 

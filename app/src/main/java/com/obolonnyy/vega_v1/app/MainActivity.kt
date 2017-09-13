@@ -12,6 +12,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -251,6 +252,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             message += "\n" +MyData.CHISLITEL
 
         textViewMain.setText(message)
+
+        val fab = findViewById(R.id.main_fab) as FloatingActionButton
+        fab.setOnClickListener{ view ->
+            initializeContentFor(R.layout.content_subjects)
+            loadSubjects()
+            startCircularRevealAnimation(findViewById(R.id.content_subjects))
+        }
     }
 
     private fun loadAllFromDatabase() {
