@@ -213,6 +213,7 @@ companion object {
     /*##########  Main  ########*/
     /*##########################*/
     private fun loadMainPage(){
+
         textViewMain = findViewById(R.id.TextViewMain) as TextView
         date = MyDateClass.dateNow()
         var message = date.toString() + "  " + date.dayOfWeek + "\n"
@@ -221,12 +222,12 @@ companion object {
         numberOfWeeks = MyDateClass.getDifferenceInWeeks(beginningStudyDate)
         message += "\n week:= " + numberOfWeeks
 
-        if (numberOfWeeks % 2 == 0)
+        if ((numberOfWeeks % 2) == 0)
             message += "\n" + MyData.ZNAMENATEL
         else
             message += "\n" +MyData.CHISLITEL
 
-        textViewMain.setText(message)
+        textViewMain.text = message
 
         val fab = findViewById(R.id.main_fab) as FloatingActionButton
         fab.setPadding(100,100,100,100)
@@ -247,11 +248,13 @@ companion object {
     /*####### Professors #######*/
     /*##########################*/
     private fun loadProfessors(){
+        loadAllFromDatabase()
+
         val names = professors.map { it.FIO }
         val listView = findViewById(R.id.professors_listView) as ListView
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, names);
-        listView.setOnItemClickListener(AdapterView.OnItemClickListener { _, _, pos, id ->
+                android.R.layout.simple_list_item_1, names)
+        listView.setOnItemClickListener(AdapterView.OnItemClickListener { _, _, pos, _ ->
             run {
                 val intent = Intent(this, EachProfessorActivity::class.java)
                 intent.putExtra("professorsPos", pos)
@@ -265,6 +268,8 @@ companion object {
     /*####### Subjects #######*/
     /*##########################*/
     private fun loadSubjects(){
+        loadAllFromDatabase()
+
         SubjectsUI.activity = this
         setSchedule(numberOfWeeks, subjects, customSubjects)
         showSubjects()
@@ -310,7 +315,6 @@ companion object {
             mOutputText!!.text = ""
             getResultsFromApi()
             mCallApiButton!!.isEnabled = true
-            loadAllFromDatabase()
         }
         activityLayout.addView(mCallApiButton)
 
@@ -337,7 +341,10 @@ companion object {
         newTextView.text = text
         activityLayout.addView(newTextView)
 
-
+        val sv1 = Switch(this)
+        val sv2 = Switch(this)
+        activityLayout.addView(sv1)
+        activityLayout.addView(sv2)
     }
 
 

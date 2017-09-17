@@ -26,7 +26,7 @@ class SubjectsUI {
 
         private val LINEARLAYOUTID = 1573
         private val TEXTVIEWID = 3073
-        private var witchWeek = 1
+        private var whichWeek = 1
         private lateinit var threeWeeksSubjects: Array<Array<String>>
         private lateinit var emptyDays: Array<Int>
 
@@ -60,16 +60,23 @@ class SubjectsUI {
                 }
             }
 
-            for (subj in customSubjects){
-
-            }
+//            for (subj in customSubjects){
+//                var subjectsWeek = MyDateClass.getDifferenceInWeeks(subj.date) - 1
+//                if (subjectsWeek in -1..1){
+//                    subjectsWeek++
+//                    val time = subj.timeInt
+//                    val weekDay: Int = subj.date.dayOfWeekInt
+//                    val subjID: Int = (weekDay) * MyData.subjectsTime.size + time
+//                    threeWeeksSubjects[subjectsWeek][subjID] = subj.description
+//                }
+//            }
 
             // Теперь у нас есть массив предметов на 3 недели.
             // ToDo добавить кастомные предметы
-            // ToDo добавить настройку по автоматическому скрытию пустых дней
             findEmptyDays()
-            witchWeek = 1
+            whichWeek = 1
         }
+
 
         fun showSubjects(){
             setUpButtons()
@@ -93,7 +100,7 @@ class SubjectsUI {
 
                     val timeTextView = createTimesTextView(MyData.subjectsTime[j])
                     val descrTextView = createDescriptionTextView(
-                            threeWeeksSubjects[witchWeek][i*numberTime + j],i*numberTime + j )
+                            threeWeeksSubjects[whichWeek][i*numberTime + j],i*numberTime + j )
 
                     linearLayout.addView(timeTextView)
                     linearLayout.addView(descrTextView)
@@ -197,24 +204,24 @@ class SubjectsUI {
                 btn.setPadding(20,0,20,0)
             }
 
-            setDisableAndGray(buttons[witchWeek])
+            setDisableAndGray(buttons[whichWeek])
 
             buttons[0].setOnClickListener {
-                witchWeek = 0
+                whichWeek = 0
                 setDisableAndGray(buttons[0])
                 setEnableAndBlue(buttons[1])
                 setEnableAndBlue(buttons[2])
                 updateSubjects(0, threeWeeksSubjects)
             }
             buttons[1].setOnClickListener {
-                witchWeek = 1
+                whichWeek = 1
                 setDisableAndGray(buttons[1])
                 setEnableAndBlue(buttons[0])
                 setEnableAndBlue(buttons[2])
                 updateSubjects(1, threeWeeksSubjects)
             }
             buttons[2].setOnClickListener {
-                witchWeek = 2
+                whichWeek = 2
                 setDisableAndGray(buttons[2])
                 setEnableAndBlue(buttons[0])
                 setEnableAndBlue(buttons[1])

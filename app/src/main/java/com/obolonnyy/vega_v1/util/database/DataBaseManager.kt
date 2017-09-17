@@ -100,13 +100,14 @@ class DataBaseManager {
         }
 
         fun loadCustomSubjects(database: SQLiteDatabase): ArrayList<CustomSubjectsWithDate> {
-//            val rowParser = classParser<CustomSubjects>()
-//            val result = ArrayList<CustomSubjects>(database.select(MyData.CUSTOM_SUBJECTS_TABLE_NAME).parseList(rowParser))
-            val result = ArrayList<CustomSubjectsWithDate>()
+            val rowParser = classParser<CustomSubjects>()
+            val result = ArrayList<CustomSubjects>(database.select(MyData.CUSTOM_SUBJECTS_TABLE_NAME).parseList(rowParser))
+            val result2 = ArrayList<CustomSubjectsWithDate>()
             for (each in result){
-                result.add(CustomSubjectsWithDate(each.id, each.time, each.description, each.stringDate, MyDateClass.dateParse(each.stringDate)))
+                result2.add(CustomSubjectsWithDate(each.id, each.time, each.description,
+                        each.stringDate, MyDateClass.dateParse(each.stringDate)))
             }
-            return result
+            return result2
         }
     }
 }
