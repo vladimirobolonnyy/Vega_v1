@@ -28,7 +28,7 @@ class DataBaseManager {
                 for (each: Professors in professors) {
                     database.insert(
                             MyData.PROFESSORS_TABLE_NAME,
-                            "id" to each.id,
+//                            "id" to each.id,
                             "FIO" to each.FIO,
                             "scienceDegree" to each.scienceDegree,
                             "email" to each.email,
@@ -52,9 +52,9 @@ class DataBaseManager {
                 for (each: Subjects in subjects) {
                     database.insert(
                             MyData.SUBJECTS_TABLE_NAME,
-                            "id" to each.id,
+//                            "id" to each.id,
                             "time" to each.time,
-                            "dayOfWeek" to each.dayOfWeek,
+                            "dayOfWeekInt" to each.dayOfWeekInt,
                             "chislOrZnamen" to each.chislOrZnamen,
                             "description" to each.description
                             )
@@ -76,7 +76,7 @@ class DataBaseManager {
                 for (each: CustomSubjects in customSubjects) {
                     database.insert(
                             MyData.CUSTOM_SUBJECTS_TABLE_NAME,
-                            "id" to each.id,
+//                            "id" to each.id,
                             "time" to each.time,
                             "description" to each.description,
                             "stringDate" to each.stringDate
@@ -100,16 +100,13 @@ class DataBaseManager {
         }
 
         fun loadCustomSubjects(database: SQLiteDatabase): ArrayList<CustomSubjectsWithDate> {
-            val rowParser = classParser<CustomSubjects>()
-            val result = ArrayList<CustomSubjects>(database.select(MyData.CUSTOM_SUBJECTS_TABLE_NAME).parseList(rowParser))
-
-            var result2 = ArrayList<CustomSubjectsWithDate>()
-
+//            val rowParser = classParser<CustomSubjects>()
+//            val result = ArrayList<CustomSubjects>(database.select(MyData.CUSTOM_SUBJECTS_TABLE_NAME).parseList(rowParser))
+            val result = ArrayList<CustomSubjectsWithDate>()
             for (each in result){
-                result2.add(CustomSubjectsWithDate(each.id, each.time, each.description, each.stringDate, MyDateClass.dateParse(each.stringDate)))
+                result.add(CustomSubjectsWithDate(each.id, each.time, each.description, each.stringDate, MyDateClass.dateParse(each.stringDate)))
             }
-
-            return result2
+            return result
         }
     }
 }

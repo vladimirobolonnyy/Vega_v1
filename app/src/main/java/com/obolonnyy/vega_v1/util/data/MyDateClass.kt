@@ -24,7 +24,7 @@ data class MyDateClass(val year: Int, val month: Int, val dayOfMonth: Int) : Com
 
         val usialDate = Date((year - 1900), (month - 1), (dayOfMonth))
         dayOfWeekInt = usialDate.day
-        dayOfWeek = MyData.daysOfWeek[dayOfWeekInt-1]
+        dayOfWeek = MyData.daysOfWeek[dayOfWeekInt]
     }
 
     override fun compareTo(other: MyDateClass): Int {
@@ -78,7 +78,7 @@ data class MyDateClass(val year: Int, val month: Int, val dayOfMonth: Int) : Com
             val diff = currentDate - beginningDate.time
 
             // diff_in_days - разница в днях, начиная от начала учёбы
-            val diff_in_days = (diff / (24 * 60 * 60000)).toInt()
+            val diff_in_days = (diff / (24 * 60 * 60000)).toInt() - 1
             val number_of_week = (diff_in_days + beginningDate.day) / 7 + 1
 
             return number_of_week

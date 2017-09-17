@@ -2,13 +2,10 @@ package com.obolonnyy.vega_v1.app
 
 import android.Manifest
 import android.accounts.AccountManager
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -33,6 +30,9 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.sheets.v4.SheetsScopes
 import com.obolonnyy.vega_v1.R
+import com.obolonnyy.vega_v1.loadinfotoscreen.SubjectsUI
+import com.obolonnyy.vega_v1.loadinfotoscreen.SubjectsUI.Companion.setSchedule
+import com.obolonnyy.vega_v1.loadinfotoscreen.SubjectsUI.Companion.showSubjects
 import com.obolonnyy.vega_v1.util.data.MyData
 import com.obolonnyy.vega_v1.util.data.MyDateClass
 import com.obolonnyy.vega_v1.util.database.MyDatabaseOpenHelper
@@ -49,19 +49,34 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
+companion object {
+    lateinit var subjects: ArrayList<Subjects>
+    lateinit var customSubjects: ArrayList<CustomSubjectsWithDate>
+    lateinit var professors: ArrayList<Professors>
+    lateinit var date: MyDateClass
+    var numberOfWeeks: Int = 0
+
+    internal val REQUEST_ACCOUNT_PICKER = 1000
+    internal val REQUEST_AUTHORIZATION = 1001
+    internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+    internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+
+    private val BUTTON_TEXT = "Call Google Sheets API"
+    private val PREF_ACCOUNT_NAME = "accountName"
+    private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
+    private val spreadsheetId = "1oThzOBek1DUIAVBIdqTR1tkUnQJJTcbPR0lWZ3n5Z0k"
+}
+
     private lateinit var viewGroup: ViewGroup
     private lateinit var textViewMain: TextView
-    private lateinit var subjects: ArrayList<Subjects>
-    private lateinit var customSubjects: ArrayList<CustomSubjectsWithDate>
-    private lateinit var professors: ArrayList<Professors>
-    private lateinit var sPref: SharedPreferences
+//    private lateinit var sPref: SharedPreferences
 
     private val mDBhelper = MyDatabaseOpenHelper(this)
 
-    lateinit var mCredential: GoogleAccountCredential
+    private lateinit var mCredential: GoogleAccountCredential
     private var mOutputText: TextView? = null
     private var mCallApiButton: Button? = null
-    lateinit var mProgress: ProgressDialog
+    private lateinit var mProgress: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer.setDrawerListener(toggle)
+        drawer.addDrawerListener(toggle)
         toggle.syncState()
 
         val navigationView = findViewById(R.id.nav_view) as NavigationView
@@ -81,16 +96,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         /*################ мой код ##############*/
 
-        sPref = getSharedPreferences("myFileForData", Context.MODE_PRIVATE)
-
         loadAllFromDatabase()
         loadMainPage()
-
-//        val screen = sPref.getInt(Screens.SCREENS.screen, R.id.Main_Acti)
-//        onNavigationItemSelected(screen)
-
-//        val fab = findViewById(R.id.floatingActionButton) as FloatingActionButton
-//        fab.setOnClickListener(View.OnClickListener { startCircularRevealAnimation() })
     }
 
     override fun onBackPressed() {
@@ -103,20 +110,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
         return if (id == R.id.action_settings) {
-//            val intent = Intent(this, SettingsActivity::class.java)
-//            startActivity(intent)
             initializeContentFor(R.layout.content_settings)
             loadSettingsPage()
             true
@@ -131,32 +132,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun onNavigationItemSelected(id: Int): Boolean {
-        if (id == R.id.Main_Acti) {
-            initializeContentFor(R.layout.content_main)
-            loadMainPage()
-            startCircularRevealAnimation(findViewById(R.id.content_main))
-        } else if (id == R.id.Subjects_Acti) {
-            initializeContentFor(R.layout.content_subjects)
-            loadSubjects()
-            startCircularRevealAnimation(findViewById(R.id.content_subjects))
-        } else if (id == R.id.Professors_Acti) {
-            initializeContentFor(R.layout.content_professors)
-            loadProfessors()
-            startCircularRevealAnimation(findViewById(R.id.content_professors))
 
-        } else if (id == R.id.Exams_Acti) {
-            initializeContentFor(R.layout.content_exams)
-            loadExamsPage()
-            startCircularRevealAnimation(findViewById(R.id.content_exams))
-
-        } else if (id == R.id.Settings_Acti) {
-            initializeContentFor(R.layout.content_settings)
-            loadSettingsPage()
-//            val intent = Intent(this, SettingsActivity::class.java)
-//            startActivity(intent)
-        } else if (id == R.id.About_Acti) {
-            initializeContentFor(R.layout.content_about)
-            loadAboutPage()
+        when (id){
+            R.id.Main_Acti -> {
+                initializeContentFor(R.layout.content_main)
+                loadMainPage()
+                startCircularRevealAnimation(findViewById(R.id.content_main))
+            }
+            R.id.Subjects_Acti -> {
+                initializeContentFor(R.layout.content_subjects)
+                loadSubjects()
+                startCircularRevealAnimation(findViewById(R.id.content_subjects))
+            }
+            R.id.Professors_Acti -> {
+                initializeContentFor(R.layout.content_professors)
+                loadProfessors()
+                startCircularRevealAnimation(findViewById(R.id.content_professors))
+            }
+            R.id.Exams_Acti -> {
+                initializeContentFor(R.layout.content_exams)
+                loadExamsPage()
+                startCircularRevealAnimation(findViewById(R.id.content_exams))
+            }
+            R.id.Settings_Acti -> {
+                initializeContentFor(R.layout.content_settings)
+                loadSettingsPage()
+                startCircularRevealAnimation(findViewById(R.id.content_settings))
+            }
+            R.id.About_Acti -> {
+                initializeContentFor(R.layout.content_about)
+                loadAboutPage()
+                startCircularRevealAnimation(findViewById(R.id.content_about))
+            }
+            else -> {}
         }
 
         val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
@@ -172,17 +180,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-
-
-
-
-
-
-
     /*##########################*/
     /*##########  Other  ########*/
     /*##########################*/
-
 
     // Custom method to create a circular reveal animation for specified view
     private fun startCircularRevealAnimation(v: View) {
@@ -195,55 +195,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val rand = Random().nextInt(10)
         when(rand) {
-            0,1 -> { x = 0; y = 0; }
+            0,1 -> {}
             2,3 -> { x = maxX; y = 0; }
             4,5 -> { x = 0; y = maxY; }
             6,7 -> { x = maxX; y = maxY; }
             else -> { x = maxX/2; y = maxY/2; }
         }
-
         val startRadius = 0
         val endRadius = Math.hypot(workingView.width.toDouble(), workingView.height.toDouble()).toInt()
-
         val anim = ViewAnimationUtils.createCircularReveal(v, x, y, startRadius.toFloat(),
                 endRadius.toFloat())
-        anim.setDuration(800)
-        anim.setStartDelay(80)
-        anim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-//                findViewById(R.id.floatingActionButton).setBackgroundColor(0)
-//                findViewById(R.id.content_main).visibility(View.INVISIBLE)
-//                findViewById(R.id.content_main).setBackgroundColor(R.color.myOrange)
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-//                v.setVisibility(View.VISIBLE)
-
-            }
-        })
+        anim.duration = 500
         anim.start()
     }
-
-
-
-
-
-
-
-
-
-
 
     /*##########################*/
     /*##########  Main  ########*/
     /*##########################*/
     private fun loadMainPage(){
         textViewMain = findViewById(R.id.TextViewMain) as TextView
-        val date = MyDateClass.dateNow()
+        date = MyDateClass.dateNow()
         var message = date.toString() + "  " + date.dayOfWeek + "\n"
 
-        val beginningStudyDate = MyDateClass.dateParse(sPref.getString("beginningStudyDate", "01.09.2017"))
-        val numberOfWeeks = MyDateClass.getDifferenceInWeeks(beginningStudyDate)
+        val beginningStudyDate = MyDateClass.dateParse(GlobalSettings.getBeginningStudyDate(this))
+        numberOfWeeks = MyDateClass.getDifferenceInWeeks(beginningStudyDate)
         message += "\n week:= " + numberOfWeeks
 
         if (numberOfWeeks % 2 == 0)
@@ -254,10 +229,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         textViewMain.setText(message)
 
         val fab = findViewById(R.id.main_fab) as FloatingActionButton
+        fab.setPadding(100,100,100,100)
         fab.setOnClickListener{ view ->
             initializeContentFor(R.layout.content_subjects)
-            loadSubjects()
             startCircularRevealAnimation(findViewById(R.id.content_subjects))
+            loadSubjects()
         }
     }
 
@@ -271,13 +247,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /*####### Professors #######*/
     /*##########################*/
     private fun loadProfessors(){
-//        var message: String = ""
-//        for (each in professors){
-//            message += each.toString() + "\n"+ "\n"
-//        }
-//        val textViewProfessors: TextView = findViewById(R.id.textViewProfessors) as TextView
-//        textViewProfessors.setText(message)
-
         val names = professors.map { it.FIO }
         val listView = findViewById(R.id.professors_listView) as ListView
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
@@ -296,18 +265,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /*####### Subjects #######*/
     /*##########################*/
     private fun loadSubjects(){
-        var message: String = ""
-        for (each in subjects){
-            message += each.toString() + "\n"+ "\n"
-        }
-
-        message += "################ \n\n"
-
-        for (each in customSubjects){
-            message += each.toString() + "\n"+ "\n"
-        }
-        val textViewSubjects: TextView = findViewById(R.id.textViewSubjects) as TextView
-        textViewSubjects.setText(message)
+        SubjectsUI.activity = this
+        setSchedule(numberOfWeeks, subjects, customSubjects)
+        showSubjects()
     }
 
     /*##########################*/
@@ -350,6 +310,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mOutputText!!.text = ""
             getResultsFromApi()
             mCallApiButton!!.isEnabled = true
+            loadAllFromDatabase()
         }
         activityLayout.addView(mCallApiButton)
 
@@ -364,12 +325,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mProgress = ProgressDialog(this)
         mProgress.setMessage("Calling Google Sheets API ...")
 
-        //        setContentView(activityLayout);
-
-        // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, Arrays.asList(*MainActivity.SCOPES))
                 .setBackOff(ExponentialBackOff())
+
+        val newTextView = TextView(this)
+        val text = ("animation  = ${GlobalSettings.getAnimation(this)}\n"+
+                "Дата начала учебы = ${GlobalSettings.getBeginningStudyDate(this)}\n"+
+                "Скрывать расписание? = ${GlobalSettings.getHideEmptyDays(this)}\n" +
+                "Очистить кэш")
+        newTextView.text = text
+        activityLayout.addView(newTextView)
+
 
     }
 
@@ -574,7 +541,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return dataFromApi
             } catch (e: Exception) {
                 mLastError = e
-                println("oshibka:= ${e}")
                 cancel(true)
                 return null
             }
@@ -677,18 +643,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mOutputText!!.text = "Request cancelled."
             }
         }
-    }
-
-    companion object {
-
-        internal val REQUEST_ACCOUNT_PICKER = 1000
-        internal val REQUEST_AUTHORIZATION = 1001
-        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-
-        private val BUTTON_TEXT = "Call Google Sheets API"
-        private val PREF_ACCOUNT_NAME = "accountName"
-        private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
-        private val spreadsheetId = "1oThzOBek1DUIAVBIdqTR1tkUnQJJTcbPR0lWZ3n5Z0k"
     }
 }
