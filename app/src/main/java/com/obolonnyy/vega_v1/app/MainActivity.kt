@@ -219,7 +219,7 @@ companion object {
         var message = date.toString() + "  " + date.dayOfWeek + "\n"
 
         val beginningStudyDate = MyDateClass.dateParse(GlobalSettings.getBeginningStudyDate(this))
-        numberOfWeeks = MyDateClass.getDifferenceInWeeks(beginningStudyDate)
+        numberOfWeeks = MyDateClass.getDifferenceInWeeksFromNow(beginningStudyDate)
         message += "\n week:= " + numberOfWeeks
 
         if ((numberOfWeeks % 2) == 0)

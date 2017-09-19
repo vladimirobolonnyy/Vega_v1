@@ -129,8 +129,6 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
                 "description" to "Петров Петр Петрович рассказывает о Петре первом, сыне его славнов, богатстве нажитом и заслугах великих"
         )
 
-        //ToDo сделать так, чтобы работало
-        //ToDo вроде бы еще надо сделать обновление, чтобы подкачиваемые данные сразу обновлялись
         database.insert(
                 MyData.CUSTOM_SUBJECTS_TABLE_NAME,
                 "id" to 1,

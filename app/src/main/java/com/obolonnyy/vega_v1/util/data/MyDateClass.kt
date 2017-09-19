@@ -56,6 +56,10 @@ data class MyDateClass(val year: Int, val month: Int, val dayOfMonth: Int) : Com
 
         fun dateNow(): MyDateClass = MyDateClass(year = Date().year + 1900, month = Date().month + 1, dayOfMonth = Date().date)
 
+        fun javaDateToMyDate(date: Date): MyDateClass = MyDateClass(year = date.year + 1900, month = date.month + 1, dayOfMonth = date.date)
+
+        fun myDateToJavaDate(date: MyDateClass): Date = Date((date.year - 1900), (date.month - 1), (date.dayOfMonth))
+
         // На всякий случай. Вдруг пригодится брать не только дату, но и время
         fun getDateAndTimeNow(): String = Date().toString()
 
@@ -64,26 +68,39 @@ data class MyDateClass(val year: Int, val month: Int, val dayOfMonth: Int) : Com
                 val simpleDateFormat = SimpleDateFormat(DateHelper.DF_SIMPLE_STRING)
                 val parsedDate: Date = simpleDateFormat.parse(stringDate)
                 // В стандартной реализации из года вычитается 1900. Не знаю, зачем.
-                return MyDateClass(year = parsedDate.year + 1900, month = parsedDate.month + 1, dayOfMonth = parsedDate.date)
+                return javaDateToMyDate(parsedDate)
+//                return MyDateClass(year = parsedDate.year + 1900, month = parsedDate.month + 1, dayOfMonth = parsedDate.date)
             } catch (e: IllegalArgumentException) {
                 throw IllegalDateFormatException("Неверная дата. Формат даты должен быть" +
                         " ${DateHelper.DF_SIMPLE_STRING}")
             }
         }
 
-        fun getDifferenceInWeeks(date: MyDateClass): Int{
+        fun getDifferenceInWeeksFromNow(date: MyDateClass): Int{
             val currentDate = Date().time
-            var beginningDate = Date((date.year - 1900), (date.month - 1), (date.dayOfMonth))
-
+            val beginningDate = myDateToJavaDate(date)
             val diff = currentDate - beginningDate.time
-
             // diff_in_days - разница в днях, начиная от начала учёбы
             val diff_in_days = (diff / (24 * 60 * 60000)).toInt() - 1
             val number_of_week = (diff_in_days + beginningDate.day) / 7 + 1
-
             return number_of_week
         }
 
+        fun getDifferenceInWeeks(date: MyDateClass, date2: MyDateClass): Int {
+            val firstDate = myDateToJavaDate(getStartWeeksDate(date)).time
+            val secondDate = myDateToJavaDate(getStartWeeksDate(date2)).time
+            val diff = secondDate - firstDate
+            // diff_in_days - разница в днях
+            val diff_in_days = (diff / (24 * 60 * 60000)).toInt()
+            val number_of_week = (diff_in_days) / 7
+            return number_of_week
+        }
 
+        fun getStartWeeksDate(date: MyDateClass): MyDateClass{
+            val diff = date.dayOfWeekInt // 0 - воскресенье, 1 - понедельник
+            val javaDate = Date((date.year - 1900), (date.month - 1), (date.dayOfMonth))
+            val resultDate = Date(javaDate.time - diff*24*60*60000)
+            return javaDateToMyDate(resultDate)
+        }
     }
 }

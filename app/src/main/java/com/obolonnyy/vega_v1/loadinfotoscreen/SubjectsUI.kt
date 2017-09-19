@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.obolonnyy.vega_v1.R
 import com.obolonnyy.vega_v1.app.GlobalSettings
 import com.obolonnyy.vega_v1.util.data.MyData
+import com.obolonnyy.vega_v1.util.data.MyDateClass
 import com.obolonnyy.vega_v1.util.dataobjects.CustomSubjectsWithDate
 import com.obolonnyy.vega_v1.util.dataobjects.Subjects
 import org.jetbrains.anko.backgroundColor
@@ -60,19 +61,20 @@ class SubjectsUI {
                 }
             }
 
-//            for (subj in customSubjects){
-//                var subjectsWeek = MyDateClass.getDifferenceInWeeks(subj.date) - 1
-//                if (subjectsWeek in -1..1){
-//                    subjectsWeek++
-//                    val time = subj.timeInt
-//                    val weekDay: Int = subj.date.dayOfWeekInt
-//                    val subjID: Int = (weekDay) * MyData.subjectsTime.size + time
-//                    threeWeeksSubjects[subjectsWeek][subjID] = subj.description
-//                }
-//            }
+            for (subj in customSubjects){
+                val currentDate = MyDateClass.dateNow()
+                val subjDate = subj.date
+                var subjectsWeek = MyDateClass.getDifferenceInWeeks(currentDate, subjDate)
+                if (subjectsWeek in -1..1){
+                    subjectsWeek++
+                    val time = subj.timeInt
+                    val weekDay: Int = subj.date.dayOfWeekInt
+                    val subjID: Int = (weekDay-1) * MyData.subjectsTime.size + time
+                    threeWeeksSubjects[subjectsWeek][subjID] = subj.description
+                }
+            }
 
             // Теперь у нас есть массив предметов на 3 недели.
-            // ToDo добавить кастомные предметы
             findEmptyDays()
             whichWeek = 1
         }
@@ -111,8 +113,8 @@ class SubjectsUI {
         }
 
         private fun updateSubjects(weekNumber: Int, threeWeeksSubjects: Array<Array<String>>){
-            val t = MyData.subjectsTime.size -1
-            val d = MyData.daysOfWeek.size - 2 // убираем воскресенье
+            val t = MyData.subjectsTime.size
+            val d = MyData.daysOfWeek.size - 1 // убираем воскресенье
             val n = t*d
             for (i in 0 until n){
                 val id = TEXTVIEWID + i
