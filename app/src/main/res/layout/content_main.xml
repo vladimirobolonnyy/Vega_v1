@@ -9,14 +9,21 @@
     tools:showIn="@layout/app_bar_main"
     android:id="@+id/content_main">
 
-    <TextView
-        android:id="@+id/TextViewMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="Main"
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/mainLinearLayout">
+
+        <TextView
+            android:id="@+id/TextViewMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Main"
+            />
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/main_fab"

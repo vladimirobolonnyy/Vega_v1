@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
+import com.androidessence.lib.RichTextView
 import com.obolonnyy.vega_v1.R
 import com.obolonnyy.vega_v1.app.GlobalSettings
 import com.obolonnyy.vega_v1.util.data.MyData
@@ -83,33 +85,51 @@ class SubjectsUI {
         fun showSubjects(){
             setUpButtons()
             val mainLinearLayout = activity.findViewById(R.id.subjects_linearlayout) as LinearLayout
-            val numberTime = MyData.subjectsTime.size
             val numberDays = MyData.daysOfWeek.size - 1 // убираем воскресенье
 
             for (i in 0 until numberDays){
-                // День недели
                 val daysTextView = createTitlesTextView(i)
                 mainLinearLayout.addView(daysTextView)
-
                 val middlelinearLayout = createMiddlelinearLayout(i)
-
-                for (j in 0 until numberTime){
-                    val linearLayout = LinearLayout(activity)
-                    linearLayout.orientation = LinearLayout.HORIZONTAL
-                    linearLayout.layoutParams = (ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT))
-
-                    val timeTextView = createTimesTextView(MyData.subjectsTime[j])
-                    val descrTextView = createDescriptionTextView(
-                            threeWeeksSubjects[whichWeek][i*numberTime + j],i*numberTime + j )
-
-                    linearLayout.addView(timeTextView)
-                    linearLayout.addView(descrTextView)
-                    middlelinearLayout.addView(linearLayout)
-                }
                 mainLinearLayout.addView(middlelinearLayout)
             }
+        }
+
+        private fun createMiddlelinearLayout(dayIndex: Int, localHide: Boolean = false): LinearLayout{
+            val numberTime = MyData.subjectsTime.size
+            val middlelinearLayout = LinearLayout(activity)
+
+            middlelinearLayout.orientation = LinearLayout.VERTICAL
+            middlelinearLayout.layoutParams = (ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT))
+            middlelinearLayout.id = LINEARLAYOUTID + dayIndex
+
+            if (!localHide) {
+                if (GlobalSettings.getHideEmptyDays(activity)) {
+                    if (isThisDayIsEmpty(dayIndex)) {
+                        middlelinearLayout.visibility = View.GONE
+                    }
+                }
+            }
+
+            for (j in 0 until numberTime){
+                val linearLayout = LinearLayout(activity)
+                linearLayout.orientation = LinearLayout.HORIZONTAL
+                linearLayout.layoutParams = (ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT))
+
+                val timeTextView = createTimesTextView(MyData.subjectsTime[j])
+                val descrTextView = createDescriptionTextView(
+                        threeWeeksSubjects[whichWeek][dayIndex *numberTime + j], dayIndex *numberTime + j )
+
+                linearLayout.addView(timeTextView)
+                linearLayout.addView(descrTextView)
+                middlelinearLayout.addView(linearLayout)
+            }
+
+            return middlelinearLayout
         }
 
         private fun updateSubjects(weekNumber: Int, threeWeeksSubjects: Array<Array<String>>){
@@ -118,8 +138,12 @@ class SubjectsUI {
             val n = t*d
             for (i in 0 until n){
                 val id = TEXTVIEWID + i
-                val tv = activity.findViewById(id) as TextView
-                tv.text = threeWeeksSubjects[weekNumber][i]
+                val tv = activity.findViewById(id) as RichTextView
+                val text = threeWeeksSubjects[weekNumber][i]
+                tv.text = text
+                val (start, end) = findNumbers(text)
+                if (start != end)
+                    tv.colorSpan(start, end, RichTextView.ColorFormatType.FOREGROUND, Color.RED)
             }
         }
 
@@ -143,34 +167,22 @@ class SubjectsUI {
         private fun createTimesTextView(text: String): TextView {
             val tv = TextView(activity)
             tv.text = text
-            tv.setPadding(10,10,10,10)
+            tv.setPadding(15,10,20,10)
             tv.textSize = 12f
             return tv
         }
 
-        private fun createDescriptionTextView(text: String, index: Int): TextView {
-            val tv = TextView(activity)
+        private fun createDescriptionTextView(text: String, index: Int): RichTextView {
+            val tv = RichTextView(activity)
             tv.text = text
             tv.setPadding(5,0,30,0)
             tv.textSize = 13f
             tv.id = TEXTVIEWID + index
+
+            val (start, end) = findNumbers(text)
+            if (start != end)
+                tv.colorSpan(start, end, RichTextView.ColorFormatType.FOREGROUND, Color.RED)
             return tv
-        }
-
-        private fun createMiddlelinearLayout(index: Int): LinearLayout{
-            val middlelinearLayout = LinearLayout(activity)
-            middlelinearLayout.orientation = LinearLayout.VERTICAL
-            middlelinearLayout.layoutParams = (ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT))
-            middlelinearLayout.id = LINEARLAYOUTID + index
-
-            if (GlobalSettings.getHideEmptyDays(activity)) {
-                if (isThisDayIsEmpty(index)) {
-                    middlelinearLayout.visibility = View.GONE
-                }
-            }
-            return middlelinearLayout
         }
 
         private fun isThisDayIsEmpty(dayIndex: Int) = (emptyDays[dayIndex] == 0)
@@ -241,6 +253,45 @@ class SubjectsUI {
             button.backgroundColor = Color.parseColor(activity.getString(R.color.colorPrimary))
             button.isEnabled = true
             (button as Button).textColor = Color.parseColor(activity.getString(R.color.myWhite))
+        }
+
+        private fun findNumbers(text: String): Pair<Int, Int> {
+            var start = 0
+            while (start < text.length && !Character.isDigit(text[start])) {
+                start++
+            }
+            var end = start
+            while (end < text.length && Character.isDigit(text[end])){
+                end++
+            }
+            // увеличим на еще одну букву, чтобы всякие аудитории типа 428ю были закрашены
+            if ((end > 0) and (end < text.length))
+                end++
+            if ((start != 0) and (end != 0))
+                return Pair(start, (end))
+            else
+                return (Pair(0,0))
+        }
+
+        fun createTodayScrollView(): ScrollView {
+            val today = MyDateClass.dateNow()
+            val dayIndex = today.dayOfWeekInt - 1
+            val daysTextView = SubjectsUI.createTitlesTextView(dayIndex)
+            val middleLinearLayout = createMiddlelinearLayout(dayIndex, true)
+
+            val mainLinearLayout = LinearLayout(activity)
+            mainLinearLayout.orientation = LinearLayout.VERTICAL
+            mainLinearLayout.layoutParams = (ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT))
+
+            mainLinearLayout.addView(daysTextView)
+            mainLinearLayout.addView(middleLinearLayout)
+
+            val scrollview = ScrollView(activity)
+            scrollview.addView(mainLinearLayout)
+
+            return scrollview
         }
     }
 }

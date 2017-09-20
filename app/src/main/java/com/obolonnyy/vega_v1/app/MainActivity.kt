@@ -97,6 +97,11 @@ companion object {
         /*################ мой код ##############*/
 
         loadAllFromDatabase()
+
+        SubjectsUI.activity = this
+        setSchedule(numberOfWeeks, subjects, customSubjects)
+
+
         loadMainPage()
     }
 
@@ -220,12 +225,14 @@ companion object {
 
         val beginningStudyDate = MyDateClass.dateParse(GlobalSettings.getBeginningStudyDate(this))
         numberOfWeeks = MyDateClass.getDifferenceInWeeksFromNow(beginningStudyDate)
-        message += "\n week:= " + numberOfWeeks
+        message += "\n Неделя " + numberOfWeeks
 
         if ((numberOfWeeks % 2) == 0)
-            message += "\n" + MyData.ZNAMENATEL
+            message += ", " + MyData.ZNAMENATEL
         else
-            message += "\n" +MyData.CHISLITEL
+            message += ", " +MyData.CHISLITEL
+
+        message +="\n"
 
         textViewMain.text = message
 
@@ -236,6 +243,9 @@ companion object {
             startCircularRevealAnimation(findViewById(R.id.content_subjects))
             loadSubjects()
         }
+
+        val view = findViewById(R.id.mainLinearLayout) as LinearLayout
+        view.addView(SubjectsUI.createTodayScrollView())
     }
 
     private fun loadAllFromDatabase() {
