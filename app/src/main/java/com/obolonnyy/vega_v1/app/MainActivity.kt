@@ -218,6 +218,9 @@ companion object {
     /*##########################*/
     private fun loadMainPage(){
 
+        val navigationView = findViewById(R.id.nav_view) as NavigationView
+        navigationView.getMenu().getItem(0).setChecked(true)
+
         textViewMain = findViewById(R.id.TextViewMain) as TextView
         date = MyDateClass.dateNow()
         var message = date.toString() + "  " + date.dayOfWeek + "\n"
@@ -238,6 +241,8 @@ companion object {
         val fab = findViewById(R.id.main_fab) as FloatingActionButton
         fab.setPadding(100,100,100,100)
         fab.setOnClickListener{ view ->
+            val navigationView = findViewById(R.id.nav_view) as NavigationView
+            navigationView.getMenu().getItem(1).setChecked(true)
             initializeContentFor(R.layout.content_subjects)
             startCircularRevealAnimation(findViewById(R.id.content_subjects))
             loadSubjects()
