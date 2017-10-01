@@ -32,19 +32,23 @@ class SubjectsUI {
         private var whichWeek = 1
         private lateinit var threeWeeksSubjects: Array<Array<String>>
         private lateinit var emptyDays: Array<Int>
+        private var currentWeek: Int = 0
 
         lateinit var activity: Activity
 
-        fun setSchedule(numberOfWeeks: Int, subjects: ArrayList<Subjects>,
+        fun setSchedule(subjects: ArrayList<Subjects>,
                         customSubjects: ArrayList<CustomSubjectsWithDate>) {
-            val typeOfWeekNow = numberOfWeeks % 2
+
+            val beginningStudyDate = MyDateClass.dateParse(GlobalSettings.getBeginningStudyDate(activity))
+            currentWeek = MyDateClass.getDifferenceInWeeksFromNow(beginningStudyDate)
+            val typeOfWeekNow = currentWeek % 2
             val n = MyData.subjectsTime.size * MyData.daysOfWeek.size
             threeWeeksSubjects = Array<Array<String>>(3, { Array<String>(n, { _ -> "" }) })
 
             for (subj in subjects) {
                 val time = subj.timeInt
                 val weekDay: Int = subj.dayOfWeekInt
-                val subjID: Int = (weekDay) * MyData.subjectsTime.size + time
+                val subjID: Int = (weekDay+1) * MyData.subjectsTime.size + time
 
                 if (typeOfWeekNow == 1) {
                     if (subj.chislOrZnamen == MyData.CHISLITEL)
@@ -67,11 +71,16 @@ class SubjectsUI {
                 val currentDate = MyDateClass.dateNow()
                 val subjDate = subj.date
                 var subjectsWeek = MyDateClass.getDifferenceInWeeks(currentDate, subjDate)
+
+                //костыль от воскресенья
+                if (currentDate.dayOfWeekInt == 0)
+                    subjectsWeek++
+
                 if (subjectsWeek in -1..1){
                     subjectsWeek++
                     val time = subj.timeInt
                     val weekDay: Int = subj.date.dayOfWeekInt
-                    val subjID: Int = (weekDay-1) * MyData.subjectsTime.size + time
+                    val subjID: Int = (weekDay) * MyData.subjectsTime.size + time
                     threeWeeksSubjects[subjectsWeek][subjID] = subj.description
                 }
             }
@@ -85,9 +94,9 @@ class SubjectsUI {
         fun showSubjects(){
             setUpButtons()
             val mainLinearLayout = activity.findViewById(R.id.subjects_linearlayout) as LinearLayout
-            val numberDays = MyData.daysOfWeek.size - 1 // убираем воскресенье
+            val numberDays = MyData.daysOfWeek.size - 1  // убираем воскресенье
 
-            for (i in 0 until numberDays){
+            for (i in 1..numberDays){
                 val daysTextView = createTitlesTextView(i)
                 mainLinearLayout.addView(daysTextView)
                 val middlelinearLayout = createMiddlelinearLayout(i)
@@ -136,7 +145,7 @@ class SubjectsUI {
             val t = MyData.subjectsTime.size
             val d = MyData.daysOfWeek.size - 1 // убираем воскресенье
             val n = t*d
-            for (i in 0 until n){
+            for (i in t until n){
                 val id = TEXTVIEWID + i
                 val tv = activity.findViewById(id) as RichTextView
                 val text = threeWeeksSubjects[weekNumber][i]
@@ -149,7 +158,7 @@ class SubjectsUI {
 
         private fun createTitlesTextView(index: Int): TextView {
             val tv = TextView(activity)
-            tv.text = MyData.daysOfWeek[index+1]
+            tv.text = MyData.daysOfWeek[index]
             tv.id = index
             tv.setPadding(15,10,0,5)
             tv.setTextColor(R.color.myBlue)
@@ -188,8 +197,8 @@ class SubjectsUI {
         private fun isThisDayIsEmpty(dayIndex: Int) = (emptyDays[dayIndex] == 0)
 
         private fun findEmptyDays() {
-            val result = arrayOf(0,0,0,0,0,0)
-            val days = 6
+            val result = arrayOf(0,0,0,0,0,0,0)
+            val days = 7
             val times = MyData.subjectsTime.size
 
             for (i in 0 until days){
@@ -212,10 +221,13 @@ class SubjectsUI {
             activity.findViewById(R.id.subject_currentweek),
             activity.findViewById(R.id.subject_nextweek))
 
+            var i = -1
             for (each in buttons){
                 val btn = each as Button
                 setEnableAndBlue(btn)
+                btn.text = ((currentWeek + i).toString() + " неделя")
                 btn.setPadding(20,0,20,0)
+                i++
             }
 
             setDisableAndGray(buttons[whichWeek])
@@ -275,7 +287,7 @@ class SubjectsUI {
 
         fun createTodayScrollView(): ScrollView {
             val today = MyDateClass.dateNow()
-            val dayIndex = today.dayOfWeekInt - 1
+            val dayIndex = today.dayOfWeekInt
             val daysTextView = SubjectsUI.createTitlesTextView(dayIndex)
             val middleLinearLayout = createMiddlelinearLayout(dayIndex, true)
 

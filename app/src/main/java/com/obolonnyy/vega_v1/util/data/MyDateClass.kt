@@ -77,12 +77,20 @@ data class MyDateClass(val year: Int, val month: Int, val dayOfMonth: Int) : Com
         }
 
         fun getDifferenceInWeeksFromNow(date: MyDateClass): Int{
-            val currentDate = Date().time
-            val beginningDate = myDateToJavaDate(date)
-            val diff = currentDate - beginningDate.time
-            // diff_in_days - разница в днях, начиная от начала учёбы
-            val diff_in_days = (diff / (24 * 60 * 60000)).toInt() - 1
-            val number_of_week = (diff_in_days + beginningDate.day) / 7 + 1
+//            val currentDate = Date().time
+//            val beginningDate = myDateToJavaDate(date)
+//            val diff = currentDate - beginningDate.time
+//            // diff_in_days - разница в днях, начиная от начала учёбы
+//            val diff_in_days = (diff / (24 * 60 * 60000)).toInt() - 1
+//            val number_of_week = (diff_in_days + beginningDate.day) / 7 + 1
+//            return number_of_week
+
+            val currentDate = myDateToJavaDate(getStartWeeksDate(dateNow())).time
+            val secondDate = myDateToJavaDate(getStartWeeksDate(date)).time
+            val diff = currentDate - secondDate
+            // diff_in_days - разница в днях
+            val diff_in_days = (diff / (24 * 60 * 60000)).toInt()
+            val number_of_week = (diff_in_days) / 7
             return number_of_week
         }
 

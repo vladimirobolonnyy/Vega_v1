@@ -99,8 +99,7 @@ companion object {
         loadAllFromDatabase()
 
         SubjectsUI.activity = this
-        setSchedule(numberOfWeeks, subjects, customSubjects)
-
+        setSchedule(subjects, customSubjects)
 
         loadMainPage()
     }
@@ -279,9 +278,8 @@ companion object {
     /*##########################*/
     private fun loadSubjects(){
         loadAllFromDatabase()
-
         SubjectsUI.activity = this
-        setSchedule(numberOfWeeks, subjects, customSubjects)
+        setSchedule(subjects, customSubjects)
         showSubjects()
     }
 
@@ -307,10 +305,6 @@ companion object {
     private fun loadSettingsPage(){
 
         val activityLayout = findViewById(R.id.settingsLinearLayout) as LinearLayout
-        //        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-        //                LinearLayout.LayoutParams.MATCH_PARENT,
-        //                LinearLayout.LayoutParams.MATCH_PARENT);
-        //        activityLayout.setLayoutParams(lp);
         activityLayout.orientation = LinearLayout.VERTICAL
         activityLayout.setPadding(16, 16, 16, 16)
 
