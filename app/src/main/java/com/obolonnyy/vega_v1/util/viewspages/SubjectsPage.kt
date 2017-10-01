@@ -20,28 +20,28 @@ class SubjectsPage {
             for (row in values) {
 
                 var time: String = ""
-                var dayOfWeek: String = ""
+                var dayOfWeek: Int = 0
                 var chislOrZnamen: String = ""
                 var description: String = ""
 
                 if (row.size >= 2) {
                     time = row[0].toString()
-                    dayOfWeek = MyData.daysOfWeek[idx / 7]
+                    dayOfWeek = idx / 7
                     chislOrZnamen = MyData.CHISLITEL
                     description = row[1].toString()
                     if (description != ""){
                         result.add(Subjects(id = idx, time = time, chislOrZnamen = chislOrZnamen,
-                                dayOfWeek = dayOfWeek, description = description))
+                                dayOfWeekInt = dayOfWeek, description = description))
                     }
 
                     if (row.size == 3){
                         time = row[0].toString()
-                        dayOfWeek = MyData.daysOfWeek[idx / 7]
+                        dayOfWeek = idx / 7
                         chislOrZnamen = ZNAMENATEL
                         description = row[2].toString()
                         if (description != ""){
                             result.add(Subjects(id = idx, time = time, chislOrZnamen = chislOrZnamen,
-                                    dayOfWeek = dayOfWeek, description = description))
+                                    dayOfWeekInt = dayOfWeek, description = description))
                         }
                     }
                 }

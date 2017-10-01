@@ -46,7 +46,7 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
                     columns = *arrayOf(
                             "id" to SqlType.create("INTEGER PRIMARY KEY AUTOINCREMENT"),
                             "time" to TEXT,
-                            "dayOfWeek" to TEXT,
+                            "dayOfWeekInt" to INTEGER,
                             "chislOrZnamen" to TEXT,
                             "description" to TEXT
                     )
@@ -107,8 +107,8 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
         database.insert(
                 MyData.SUBJECTS_TABLE_NAME,
                 "id" to 1,
-                "time" to "10:15 -11:50",
-                "dayOfWeek" to "Понедельник",
+                "time" to "10:15-11:50",
+                "dayOfWeekInt" to 1,
                 "chislOrZnamen" to "Числитель",
                 "description" to "Сидоров Сидр Сидорович преподает науку о сидрах"
         )
@@ -116,17 +116,25 @@ class MyDatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "MyDatab
                 MyData.SUBJECTS_TABLE_NAME,
                 "id" to 2,
                 "time" to "13:50-15:25",
-                "dayOfWeek" to "Среда",
+                "dayOfWeekInt" to 3,
                 "chislOrZnamen" to "Знаменатель",
                 "description" to "Иванов Иван Иванович рассказывает об ивах"
         )
         database.insert(
                 MyData.SUBJECTS_TABLE_NAME,
                 "id" to 3,
-                "time" to "10:15 -11:50",
-                "dayOfWeek" to "Птяница",
+                "time" to "10:15-11:50",
+                "dayOfWeekInt" to 5,
                 "chislOrZnamen" to "Числитель",
                 "description" to "Петров Петр Петрович рассказывает о Петре первом, сыне его славнов, богатстве нажитом и заслугах великих"
+        )
+
+        database.insert(
+                MyData.CUSTOM_SUBJECTS_TABLE_NAME,
+                "id" to 1,
+                "time" to "10:15-11:50",
+                "description" to "Лабы какие-то",
+                "stringDate" to "26.09.2017"
         )
     }
 

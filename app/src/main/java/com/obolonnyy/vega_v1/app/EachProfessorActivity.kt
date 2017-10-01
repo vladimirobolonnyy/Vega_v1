@@ -3,42 +3,39 @@ package com.obolonnyy.vega_v1.app
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.widget.TextView
 import com.obolonnyy.vega_v1.R
 import com.obolonnyy.vega_v1.util.database.MyDatabaseOpenHelper
 import com.obolonnyy.vega_v1.util.database.database
+import org.jetbrains.anko.find
+import org.jetbrains.anko.setContentView
+
 
 class EachProfessorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_each_professor)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        val textView = findViewById(R.id.eachProfessor) as TextView
         val pos = intent.getIntExtra("professorsPos", -1)
-
         if (pos != -1){
             val professors = MyDatabaseOpenHelper(this).loadProfessors(database.readableDatabase)
-            val professor = professors[pos]
+            val prof = professors[pos]
 
-            this.title = professor.FIO
+            EachProfessorUI(prof).setContentView(this)
 
-            val message = professor.FIO + "\n" +
-                    "email:= " + professor.email + "\n" +
-                    "phone:= " + professor.phone + "\n" +
-                    "comment:= " + professor.comment + "\n" +
-                    "scienceDegree:= " + professor.scienceDegree + "\n"
-            textView.text = message
-        } else {
-            textView.text = ("Error with loading. Get id = ${pos}")
+            val toolbar = find<Toolbar>(R.id.each_professor_toolbar)
+            toolbar.setTitle(parse(prof.FIO))
+            setSupportActionBar(toolbar)
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
+
+    private fun parse(FIO: String): String{
+        val parsed = FIO.split(" ")
+        return (parsed[0] + " " + parsed[1][0] + ". " + parsed[2][0] + ".")
     }
 }

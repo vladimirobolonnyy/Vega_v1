@@ -4,27 +4,27 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/Main_Acti"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/ic_home"
             android:title="Главная" />
         <item
             android:id="@+id/Subjects_Acti"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/ic_today"
             android:title="Расписание" />
         <item
             android:id="@+id/Professors_Acti"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/ic_person"
             android:title="Преподаватели" />
         <item
             android:id="@+id/Exams_Acti"
-            android:icon="@drawable/ic_menu_send"
-            android:title="(в разработке)Сессия" />
+            android:icon="@drawable/ic_session"
+            android:title="Сессия" />
         <item
             android:id="@+id/Settings_Acti"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings"
             android:title="Настройки" />
         <item
             android:id="@+id/About_Acti"
-            android:icon="@drawable/ic_menu_send"
-            android:title="(в разработке)О приложении" />
+            android:icon="@drawable/ic_info"
+            android:title="О приложении" />
     </group>
 </menu>

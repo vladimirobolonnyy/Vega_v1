@@ -6,4 +6,9 @@
     <color name="myBlue">#2D2C7C</color>
     <color name="myOrange">#FF8C00</color>
     <color name="myGold">#FFD700</color>
+    <color name="myWhite">#FFFFFF</color>
+    <color name="myGray">#9A9A99</color>
+    <color name="myBlack">#000000</color>
+    <color name="myPink">#782D86</color>
+    <color name="myBlueLignt">#ECEDEC</color>
 </resources>
