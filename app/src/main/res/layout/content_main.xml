@@ -20,6 +20,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Main" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextBeginsDate"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

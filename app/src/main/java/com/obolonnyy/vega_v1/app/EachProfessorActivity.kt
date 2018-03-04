@@ -16,12 +16,10 @@ class EachProfessorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val pos = intent.getIntExtra("professorsPos", -1)
-        if (pos != -1){
+        if (pos != -1) {
             val professors = MyDatabaseOpenHelper(this).loadProfessors(database.readableDatabase)
             val prof = professors[pos]
-
             EachProfessorUI(prof).setContentView(this)
-
             val toolbar = find<Toolbar>(R.id.each_professor_toolbar)
             toolbar.setTitle(parse(prof.FIO))
             setSupportActionBar(toolbar)

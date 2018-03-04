@@ -8,19 +8,10 @@ import org.jetbrains.anko.*
 /**
  * Created by Vladimir Obolonnyy on 12.09.2017.
  */
-class EachProfessorUI(professor: Professors) : AnkoComponent<EachProfessorActivity> {
-
-    private lateinit var prof: Professors
-
-    init {
-        prof = professor
-    }
+class EachProfessorUI(private val prof: Professors) : AnkoComponent<EachProfessorActivity> {
 
     override fun createView(ui: AnkoContext<EachProfessorActivity>) = with(ui){
-
         verticalLayout {
-            background.setAlpha(20)
-
             include<AppBarLayout>(R.layout.each_professor_appbarlayout)
 
             textView("Телефон: " + prof.phone).lparams(width = wrapContent) {

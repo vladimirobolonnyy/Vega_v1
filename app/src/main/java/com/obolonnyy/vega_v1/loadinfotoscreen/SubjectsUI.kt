@@ -165,10 +165,10 @@ class SubjectsUI {
             tv.textSize = 20f
             tv.onClick {
                 val linearLayout = activity.findViewById(LINEARLAYOUTID + index)
-                if (linearLayout.visibility == 0)
+                if (linearLayout.visibility == View.VISIBLE)
                     linearLayout.visibility = View.GONE
                 else
-                    linearLayout.visibility = 0
+                    linearLayout.visibility = View.VISIBLE
             }
             return tv
         }

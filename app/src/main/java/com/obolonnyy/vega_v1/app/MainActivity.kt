@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -49,23 +50,24 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
-companion object {
-    lateinit var subjects: ArrayList<Subjects>
-    lateinit var customSubjects: ArrayList<CustomSubjectsWithDate>
-    lateinit var professors: ArrayList<Professors>
-    lateinit var date: MyDateClass
-    var numberOfWeeks: Int = 0
+    companion object {
+        lateinit var subjects: ArrayList<Subjects>
+        lateinit var customSubjects: ArrayList<CustomSubjectsWithDate>
+        lateinit var professors: ArrayList<Professors>
+        lateinit var date: MyDateClass
+        var numberOfWeeks: Int = 0
 
-    internal val REQUEST_ACCOUNT_PICKER = 1000
-    internal val REQUEST_AUTHORIZATION = 1001
-    internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-    internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+        internal val REQUEST_ACCOUNT_PICKER = 1000
+        internal val REQUEST_AUTHORIZATION = 1001
+        internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
 
-    private val BUTTON_TEXT = "Download Data"
-    private val PREF_ACCOUNT_NAME = "accountName"
-    private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
-    private val spreadsheetId = "1oThzOBek1DUIAVBIdqTR1tkUnQJJTcbPR0lWZ3n5Z0k"
-}
+        private val BUTTON_TEXT = "Download Data"
+        private val PREF_ACCOUNT_NAME = "accountName"
+        private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
+        private val spreadsheetId = "1oThzOBek1DUIAVBIdqTR1tkUnQJJTcbPR0lWZ3n5Z0k"
+    }
+
     private lateinit var textViewMain: TextView
 //    private lateinit var sPref: SharedPreferences
 
@@ -75,6 +77,9 @@ companion object {
     private var mOutputText: TextView? = null
     private var mCallApiButton: Button? = null
     private lateinit var mProgress: ProgressDialog
+
+    private var toastCount = 0
+    private val messages = listOf("Неа","Нет тут преподавателя", "Не откроется")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,7 +139,7 @@ companion object {
 
     private fun onNavigationItemSelected(id: Int): Boolean {
 
-        when (id){
+        when (id) {
             R.id.Main_Acti -> {
                 initializeContentFor(R.layout.content_main)
                 loadMainPage()
@@ -165,7 +170,8 @@ companion object {
                 loadAboutPage()
                 startCircularRevealAnimation(findViewById(R.id.content_about))
             }
-            else -> {}
+            else -> {
+            }
         }
 
         val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
@@ -193,12 +199,17 @@ companion object {
         val maxY = workingView.height
 
         val rand = Random().nextInt(10)
-        when(rand) {
-            0,1 -> {}
-            2,3 -> { x = maxX; y = 0; }
-            4,5 -> { x = 0; y = maxY; }
-            6,7 -> { x = maxX; y = maxY; }
-            else -> { x = maxX/2; y = maxY/2; }
+        when (rand) {
+            0, 1 -> {
+            }
+            2, 3 -> {
+                x = maxX; y = 0; }
+            4, 5 -> {
+                x = 0; y = maxY; }
+            6, 7 -> {
+                x = maxX; y = maxY; }
+            else -> {
+                x = maxX / 2; y = maxY / 2; }
         }
         val startRadius = 0
         val endRadius = Math.hypot(workingView.width.toDouble(), workingView.height.toDouble()).toInt()
@@ -211,7 +222,7 @@ companion object {
     /*##########################*/
     /*##########  Main  ########*/
     /*##########################*/
-    private fun loadMainPage(){
+    private fun loadMainPage() {
 
         val navigationView = findViewById(R.id.nav_view) as NavigationView
         navigationView.getMenu().getItem(0).setChecked(true)
@@ -227,15 +238,15 @@ companion object {
         if ((numberOfWeeks % 2) == 0)
             message += ", " + MyData.ZNAMENATEL
         else
-            message += ", " +MyData.CHISLITEL
+            message += ", " + MyData.CHISLITEL
 
-        message +="\n"
+        message += "\n"
 
         textViewMain.text = message
 
         val fab = findViewById(R.id.main_fab) as FloatingActionButton
-        fab.setPadding(100,100,100,100)
-        fab.setOnClickListener{ view ->
+        fab.setPadding(100, 100, 100, 100)
+        fab.setOnClickListener { _ ->
             val navigationView = findViewById(R.id.nav_view) as NavigationView
             navigationView.getMenu().getItem(1).setChecked(true)
             initializeContentFor(R.layout.content_subjects)
@@ -256,7 +267,7 @@ companion object {
     /*##########################*/
     /*####### Professors #######*/
     /*##########################*/
-    private fun loadProfessors(){
+    private fun loadProfessors() {
         loadAllFromDatabase()
 
         val names = professors.map { it.FIO }
@@ -265,9 +276,15 @@ companion object {
                 android.R.layout.simple_list_item_1, names)
         listView.setOnItemClickListener(AdapterView.OnItemClickListener { _, _, pos, _ ->
             run {
-                val intent = Intent(this, EachProfessorActivity::class.java)
-                intent.putExtra("professorsPos", pos)
-                startActivity(intent)
+                if (professors[pos].FIO != "  " && professors[pos].FIO.isNotEmpty()) {
+                    val intent = Intent(this, EachProfessorActivity::class.java)
+                    intent.putExtra("professorsPos", pos)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, messages[toastCount], Toast.LENGTH_SHORT).show()
+                    toastCount++
+                    toastCount %= messages.size
+                }
             }
         })
         listView.setAdapter(adapter)
@@ -276,7 +293,7 @@ companion object {
     /*##########################*/
     /*####### Subjects #######*/
     /*##########################*/
-    private fun loadSubjects(){
+    private fun loadSubjects() {
         loadAllFromDatabase()
         SubjectsUI.activity = this
         setSchedule(subjects, customSubjects)
@@ -302,7 +319,7 @@ companion object {
     /*##########################*/
 
 
-    private fun loadSettingsPage(){
+    private fun loadSettingsPage() {
 
         val activityLayout = findViewById(R.id.settingsLinearLayout) as LinearLayout
         activityLayout.orientation = LinearLayout.VERTICAL
@@ -327,7 +344,7 @@ companion object {
         mOutputText!!.setPadding(16, 16, 16, 16)
         mOutputText!!.isVerticalScrollBarEnabled = true
         mOutputText!!.movementMethod = ScrollingMovementMethod()
-        mOutputText!!.text = "Click the \'${MainActivity.BUTTON_TEXT}\' button to test the API."
+        mOutputText!!.text = ""
         activityLayout.addView(mOutputText)
 
         mProgress = ProgressDialog(this)
@@ -338,17 +355,42 @@ companion object {
                 .setBackOff(ExponentialBackOff())
 
         val newTextView = TextView(this)
-        val text = ("animation  = ${GlobalSettings.getAnimation(this)}\n"+
-                "Дата начала учебы = ${GlobalSettings.getBeginningStudyDate(this)}\n"+
-                "Скрывать расписание? = ${GlobalSettings.getHideEmptyDays(this)}\n" +
-                "Очистить кэш")
+        val text = ("Дата начала учебы: ${GlobalSettings.getBeginningStudyDate(this)}")
         newTextView.text = text
+        newTextView.id = R.id.TextViewMain
         activityLayout.addView(newTextView)
 
-        val sv1 = Switch(this)
-        val sv2 = Switch(this)
-        activityLayout.addView(sv1)
-        activityLayout.addView(sv2)
+        val editText = EditText(this)
+        editText.hint = "Тут можно ввести новую дату"
+        editText.id = R.id.editTextBeginsDate
+
+        val buttonOk = Button(this)
+        buttonOk.setText("Save")
+        buttonOk.setOnClickListener() {
+            val editText = findViewById(R.id.editTextBeginsDate) as EditText
+            val date = editText.text
+            try {
+                GlobalSettings.setBeginningStudyDate(this, date.toString())
+                Toast.makeText(this, "Дата успешно обновлена", Toast.LENGTH_SHORT).show()
+                //hide keyboard
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(editText.windowToken,0)
+
+                val newTextView = findViewById(R.id.TextViewMain) as TextView
+                val text = ("Дата начала учебы: ${GlobalSettings.getBeginningStudyDate(this)}")
+                newTextView.text = text
+            } catch (e: Exception){
+                Toast.makeText(this, "Ошбика при сохранении даты. " +
+                        "Мб неправильный формат? Нужен dd.mm.yyyy", Toast.LENGTH_SHORT).show()
+            }
+        }
+        val editLinearLayout = LinearLayout(this)
+        editLinearLayout.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        editLinearLayout.addView(editText)
+        editLinearLayout.addView(buttonOk)
+        activityLayout.addView(editLinearLayout)
     }
 
 
@@ -574,7 +616,7 @@ companion object {
             }
 
         @Throws(IOException::class)
-        private fun testConnection(){
+        private fun testConnection() {
             val testspreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             val testrange = "Class Data!A2:E"
             val testresponse = this.mService!!.spreadsheets().values()
