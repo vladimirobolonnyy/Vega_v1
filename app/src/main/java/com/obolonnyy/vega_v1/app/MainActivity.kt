@@ -61,13 +61,11 @@ companion object {
     internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     internal const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
 
-    private val BUTTON_TEXT = "Call Google Sheets API"
+    private val BUTTON_TEXT = "Download Data"
     private val PREF_ACCOUNT_NAME = "accountName"
     private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
     private val spreadsheetId = "1oThzOBek1DUIAVBIdqTR1tkUnQJJTcbPR0lWZ3n5Z0k"
 }
-
-    private lateinit var viewGroup: ViewGroup
     private lateinit var textViewMain: TextView
 //    private lateinit var sPref: SharedPreferences
 
@@ -114,7 +112,7 @@ companion object {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
+        menuInflater.inflate(R.menu.settings_menu, menu)
         return true
     }
 
@@ -126,7 +124,6 @@ companion object {
             loadSettingsPage()
             true
         } else super.onOptionsItemSelected(item)
-
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -153,11 +150,11 @@ companion object {
                 loadProfessors()
                 startCircularRevealAnimation(findViewById(R.id.content_professors))
             }
-            R.id.Exams_Acti -> {
+/*            R.id.Exams_Acti -> {
                 initializeContentFor(R.layout.content_exams)
                 loadExamsPage()
                 startCircularRevealAnimation(findViewById(R.id.content_exams))
-            }
+            }*/
             R.id.Settings_Acti -> {
                 initializeContentFor(R.layout.content_settings)
                 loadSettingsPage()
@@ -176,13 +173,11 @@ companion object {
         return true
     }
 
-    private fun initializeContentFor(to: Int) {
-        viewGroup = findViewById(R.id.content_main) as ViewGroup
+    private fun initializeContentFor(newLayout: Int) {
+        val viewGroup = findViewById(R.id.content_main) as ViewGroup
         viewGroup.removeAllViews()
-        viewGroup.addView(View.inflate(this, to, null))
+        viewGroup.addView(View.inflate(this, newLayout, null))
     }
-
-
 
     /*##########################*/
     /*##########  Other  ########*/

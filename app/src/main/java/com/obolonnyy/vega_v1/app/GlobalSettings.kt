@@ -45,5 +45,4 @@ class GlobalSettings {
             return sPref.getString(beginningStudyDate, "01.09.2017")
         }
     }
-
 }
