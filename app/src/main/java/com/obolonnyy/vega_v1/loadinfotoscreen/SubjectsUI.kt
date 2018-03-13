@@ -150,9 +150,7 @@ class SubjectsUI {
                 val tv = activity.findViewById(id) as RichTextView
                 val text = threeWeeksSubjects[weekNumber][i]
                 tv.text = text
-                val (start, end) = findNumbers(text)
-                if (start != end)
-                    tv.colorSpan(start, end, RichTextView.ColorFormatType.FOREGROUND, Color.RED)
+                colorNumbersInTextView(tv)
             }
         }
 
@@ -188,9 +186,7 @@ class SubjectsUI {
             tv.textSize = 13f
             tv.id = TEXTVIEWID + index
 
-            val (start, end) = findNumbers(text)
-            if (start != end)
-                tv.colorSpan(start, end, RichTextView.ColorFormatType.FOREGROUND, Color.RED)
+            colorNumbersInTextView(tv)
             return tv
         }
 
@@ -267,22 +263,34 @@ class SubjectsUI {
             (button as Button).textColor = Color.parseColor(activity.getString(R.color.myWhite))
         }
 
-        private fun findNumbers(text: String): Pair<Int, Int> {
+        @Deprecated("Не гоже так прогать")
+        private fun colorNumbersInTextView(tv: RichTextView) {
+            val listOfStartEnd: List<Pair<Int, Int>> = findNumbers(tv.text.toString())
+            for ((start, end) in listOfStartEnd) {
+                if (start != end)
+                    tv.colorSpan(start, end, RichTextView.ColorFormatType.FOREGROUND, Color.RED)
+            }
+        }
+
+        private fun findNumbers(text: String): List<Pair<Int, Int>> {
             var start = 0
-            while (start < text.length && !Character.isDigit(text[start])) {
+            val resultList: ArrayList<Pair<Int, Int>> = ArrayList<Pair<Int, Int>>()
+            while(start < text.length) {
+                while (start < text.length && !Character.isDigit(text[start])) {
+                    start++
+                }
+                var end = start
+                while (end < text.length && Character.isDigit(text[end])) {
+                    end++
+                }
+                // увеличим на еще одну букву, чтобы всякие аудитории типа 428ю были закрашены
+                if ((end > 0) and (end < text.length)) {
+                    end++
+                    resultList.add(Pair(start, end))
+                }
                 start++
             }
-            var end = start
-            while (end < text.length && Character.isDigit(text[end])){
-                end++
-            }
-            // увеличим на еще одну букву, чтобы всякие аудитории типа 428ю были закрашены
-            if ((end > 0) and (end < text.length))
-                end++
-            if ((start != 0) and (end != 0))
-                return Pair(start, (end))
-            else
-                return (Pair(0,0))
+            return resultList
         }
 
         fun createTodayScrollView(): ScrollView {
